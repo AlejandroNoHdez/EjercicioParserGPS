@@ -24,7 +24,6 @@ public class Telemetria
             asignarIndice(cadenaTAIP.charAt(1));
             asignarCodigoEvento(cadenaTAIP.substring(4, 6));
             asignarFechaEvento(cadenaTAIP.substring(6, 10),cadenaTAIP.substring(10,11));
-            asignarDiaSemana(cadenaTAIP.charAt(10));
             asignarHoraEvento(cadenaTAIP.substring(11, 16));
             asignarLatitud(cadenaTAIP.substring(16, 24));
             asignarLongitud(cadenaTAIP.substring(24, 33));
@@ -110,39 +109,42 @@ public class Telemetria
             }
       }
 
-      private void asignarFechaEvento(String cadena, String dia) throws ParseException
+      private void asignarFechaEvento(String cadena, String dia) throws ParseException, Exception
       {
             SimpleDateFormat sdf = new SimpleDateFormat("dd-mm-yyyy");
             Date fechaInicio = sdf.parse("06-01-1980");
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(fechaInicio);
             calendar.add(Calendar.DAY_OF_YEAR, (Integer.parseInt(cadena) * 7)+(Integer.parseInt(dia)));
+            calendar.set(Calendar.HOUR, calendar.get(Calendar.HOUR) - 5);
             fecha_event = calendar.getTime();
+            int dayofweek =  calendar.get(Calendar.DAY_OF_WEEK);
+            asignarDiaSemana(dayofweek-1);
       }
 
-      private void asignarDiaSemana(char valor) throws Exception
+      private void asignarDiaSemana(int valor) throws Exception
       {
             switch(valor)
             {
-                  case '0':
+                  case 0:
                               dia_semana = "Domingo";
                               break;
-                  case '1':
+                  case 1:
                               dia_semana = "Lunes";
                               break;
-                  case '2':
+                  case 2:
                               dia_semana = "Martes";
                               break;
-                  case '3':
+                  case 3:
                               dia_semana = "Miércoles";
                               break;
-                  case '4':
+                  case 4:
                               dia_semana = "Jueves";
                               break;
-                  case '5':
+                  case 5:
                               dia_semana = "Viernes";
                               break;
-                  case '6':
+                  case 6:
                               dia_semana = "Sábado";
                               break;
                   default:
@@ -157,6 +159,7 @@ public class Telemetria
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(horaInicio);
             calendar.add(Calendar.SECOND, Integer.parseInt(cadena));
+            calendar.set(Calendar.HOUR, calendar.get(Calendar.HOUR) - 5);
             hora_event = calendar.getTime();
       }
 

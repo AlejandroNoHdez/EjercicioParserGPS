@@ -30,13 +30,21 @@ public class Main
             {
                 try 
                 {   
-                    if(cadenaTAIP.contains(";"))
+                    String [] cadenasTaip = cortarCadenas(cadenaTAIP);
+
+                    for (int i = 0; i < cadenasTaip.length; i++) 
                     {
-                        cadenaTelemetriaExtendida.add(new TelemetriaExt(cadenaTAIP));
-                    }
-                    else
-                    {
-                        cadenaTelemetriaBasica.add(new Telemetria(cadenaTAIP));
+                        System.out.println((i+1) + ": " + cadenasTaip[i]);
+                        cadenasTaip[i] = cortarCadenasExtendidas(cadenasTaip[i]);
+                        if(cadenasTaip[i].contains(";"))
+                        {
+                            System.out.println("entra add");
+                            cadenaTelemetriaExtendida.add(new TelemetriaExt(cadenasTaip[i]));
+                        }
+                        else
+                        {
+                            cadenaTelemetriaBasica.add(new Telemetria(cadenasTaip[i]));
+                        }
                     }
                 } 
                 catch (Exception e) 
@@ -44,7 +52,6 @@ public class Main
                     lineasInvalidas++;
                 }
             }
-            br.close();
 
             System.out.println("\nCADENAS CON TELEMETRÍA BASICA" + "\n");
             for (int i = 0; i < cadenaTelemetriaBasica.size(); i++) 
@@ -59,10 +66,33 @@ public class Main
                 System.out.println(cadenaTelemetriaExtendida.get(i).mostrarContenidoExtendido());       
             }
             System.out.println("CADENAS INVÁLIDAS: " + lineasInvalidas);
+            br.close();
         }
         catch (Exception e) 
         {
             e.getMessage();
+        }
+    }
+
+    static String[] cortarCadenas(String cadenaTAIP)
+    {
+        String[] parts = cadenaTAIP.split("<");
+
+        return parts;
+    }
+
+    static String cortarCadenasExtendidas(String cadenaTAIP)
+    {
+        if (cadenaTAIP.contains("EV"))
+        {
+            String[] parts = cadenaTAIP.split("EV");
+            parts[1] = "<REV" + parts[1] + ">";
+
+            return parts[1];
+        }
+        else
+        {
+            return cadenaTAIP;
         }
     }
 }
