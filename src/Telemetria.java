@@ -15,16 +15,18 @@ public class Telemetria
       int orientacion;
       String modo_posicion;
       String antiguedad_data;
+      String referencia;
 
       static char valorLat;
       static char valorLng;
       
       public Telemetria(String cadenaTAIP) throws Exception
       {
+            referencia = cadenaTAIP;
             asignarIndice(cadenaTAIP.charAt(1));
             asignarCodigoEvento(cadenaTAIP.substring(4, 6));
-            asignarFechaEvento(cadenaTAIP.substring(6, 10),cadenaTAIP.substring(10,11));
-            asignarHoraEvento(cadenaTAIP.substring(11, 16));
+            asignarFechaEvento(cadenaTAIP.substring(6, 10),cadenaTAIP.substring(10,11),cadenaTAIP.substring(11, 16));
+            //asignarHoraEvento(cadenaTAIP.substring(11, 16));
             asignarLatitud(cadenaTAIP.substring(16, 24));
             asignarLongitud(cadenaTAIP.substring(24, 33));
             velocidad = (float) (Integer.parseInt(cadenaTAIP.substring(33, 36)) * 1.60934);
@@ -109,15 +111,18 @@ public class Telemetria
             }
       }
 
-      private void asignarFechaEvento(String cadena, String dia) throws ParseException, Exception
+      private void asignarFechaEvento(String cadena, String dia, String horas) throws ParseException, Exception
       {
             SimpleDateFormat sdf = new SimpleDateFormat("dd-mm-yyyy");
             Date fechaInicio = sdf.parse("06-01-1980");
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(fechaInicio);
+            calendar.set(Calendar.MINUTE,0);
             calendar.add(Calendar.DAY_OF_YEAR, (Integer.parseInt(cadena) * 7)+(Integer.parseInt(dia)));
-            calendar.set(Calendar.HOUR, calendar.get(Calendar.HOUR) - 5);
+            calendar.add(Calendar.SECOND, Integer.parseInt(horas));
+            calendar.add(Calendar.HOUR, -6);
             fecha_event = calendar.getTime();
+            hora_event = calendar.getTime();
             int dayofweek =  calendar.get(Calendar.DAY_OF_WEEK);
             asignarDiaSemana(dayofweek-1);
       }
@@ -151,18 +156,7 @@ public class Telemetria
                               throw new Exception("Día de la semana inválido");
             }
       }
-
-      private void asignarHoraEvento(String cadena) throws ParseException
-      {
-            SimpleDateFormat sdf = new SimpleDateFormat("hh:mm");
-            Date horaInicio = sdf.parse("00:00");
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime(horaInicio);
-            calendar.add(Calendar.SECOND, Integer.parseInt(cadena));
-            calendar.set(Calendar.HOUR, calendar.get(Calendar.HOUR) - 5);
-            hora_event = calendar.getTime();
-      }
-
+      
       private String convertirFecha()
       {
             SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
@@ -240,7 +234,8 @@ public class Telemetria
 
       public String mostrarContenido()
       {
-            return "|| ÍNDICE DEL MENSAJE: " + indice + "\n"
+            return "|| REFERENCIA: " + referencia + "\n"
+                  + "|| ÍNDICE DEL MENSAJE: " + indice + "\n"
                   + "|| ÍNDICE DEL EVENTO: " + codigo_evento + "\n"
                   + "|| CLASIFICACIÓN DEL EVENTO: " + clasificacion_evento + "\n"
                   + "|| FECHA DEL EVENTO: " + convertirFecha() + "\n"

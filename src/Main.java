@@ -34,11 +34,9 @@ public class Main
 
                     for (int i = 0; i < cadenasTaip.length; i++) 
                     {
-                        System.out.println((i+1) + ": " + cadenasTaip[i]);
                         cadenasTaip[i] = cortarCadenasExtendidas(cadenasTaip[i]);
                         if(cadenasTaip[i].contains(";"))
                         {
-                            System.out.println("entra add");
                             cadenaTelemetriaExtendida.add(new TelemetriaExt(cadenasTaip[i]));
                         }
                         else
